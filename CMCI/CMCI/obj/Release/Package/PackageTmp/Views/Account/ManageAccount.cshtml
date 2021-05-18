@@ -1,0 +1,127 @@
+﻿@model CMCI.Models.Account
+@{
+    ViewBag.Title = "Manage Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var admin = Model != null && Model?.AccountType == 0 ? "selected" : string.Empty;
+    var staff = Model != null && Model?.AccountType == 1 ? "selected" : string.Empty;
+
+    var f = Model != null && Model?.Gender == 0 ? "selected" : string.Empty;
+    var m = Model != null && Model?.Gender == 1 ? "selected" : string.Empty;
+
+    var birthDate = Model != null ? Model?.BirthDate.ToString("MM/dd/yyyy") : DateTime.Now.ToString("MM/dd/yyyy");
+}
+
+<h2>Manage Account</h2>
+
+<form method="post" action="@Url.Action("ManageAccount","Account")">
+
+    <input type="hidden" id="Id" name="accountId" value="@Model.AccountId" />
+
+    <div class="form-group row">
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Username</label>
+            <input type="text" class="form-control form-control-user"
+                   id="Username" name="Username"
+                   placeholder="Enter Username" required value="@Model.Username">
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Password</label>
+            <input type="password" class="form-control form-control-user"
+                   id="Password" name="Password"
+                   placeholder="Enter Password" required value="@Model.Password">
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Account Type</label>
+            <select class="form-control form-control-user" name="AccountType" id="accountType">
+                <option value="" hidden>Select Account Type</option>
+                <option @admin value="0">Administrator</option>
+                <option @staff value="1">Staff</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>SurName</label>
+            <input type="text" class="form-control form-control-user"
+                   id="LastName" name="LastName" value="@Model.Lastname"
+                   placeholder="Enter Last Name" required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Given Name</label>
+            <input type="text" class="form-control form-control-user"
+                   id="FirstName" name="FirstName" value="@Model.Firstname"
+                   placeholder="Enter First Name" required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Middle Name</label>
+            <input type="text" class="form-control form-control-user"
+                   id="MiddleName" name="MiddleName" value="@Model.Middlename"
+                   placeholder="Enter Middle Name" required>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Birth Date</label>
+            <input type="datetime" class="form-control date-picker"
+                   id="BirthDate" name="BirthDate" value="@Model.BirthDate.ToString("MM/dd/yyyy")"
+                   placeholder="@birthDate" required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Adress</label>
+            <input type="text" class="form-control form-control-user"
+                   id="Address" name="Address" value="@Model.Address"
+                   placeholder="Enter Address" required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Gender</label>
+            <select class="form-control form-control-user" name="Gender" id="gender">
+                <option value="" hidden>Select Gender</option>
+                <option @f value="0">Female</option>
+                <option @m value="1">Male</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <label>Phone Number</label>
+            <input type="text" class="form-control form-control-user"
+                   id="MobileNo" name="MobileNo" value="@Model.MobileNo"
+                   placeholder="Enter Contact No." required>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <label>Email</label>
+            <input type="email" class="form-control form-control-user"
+                   id="Email" name="Email" aria-describedby="emailHelp"
+                   placeholder="Enter Email" required value="@Model.Email">
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <div class="col-sm-3 col-md-3 col-lg-3" style="margin-top: 1%">
+            <a class="btn btn-secondary bttn-width" href="@Url.Action("Accounts", "Account")">Cancel</a>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3" style="margin-top: 1%">
+            <button type="submit" class="btn btn-primary bttn-width add-account">Save</button>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6"></div>
+    </div>
+</form>
+
+@Html.Partial("Partials/_Loading")
+
+@section scripts{
+    @Scripts.Render("~/bundles/account")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/jquery-ui")
+    @Scripts.Render("~/bundles/notify")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            account.init();
+        });
+    </script>
+}

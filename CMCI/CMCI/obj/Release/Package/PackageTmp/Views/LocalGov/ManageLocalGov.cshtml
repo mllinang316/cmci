@@ -1,0 +1,199 @@
+﻿@model CMCI.Models.LocalGovernment
+@using CMCI.Helpers
+@using CMCI.Enums
+@using CMCI.Extensions
+@{
+    ViewBag.Title = "Local Government Unit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var regions = SettingsHelper.Regions();
+    var provinces = SettingsHelper.Provinces();
+
+    var hidden = Model?.Id != 0 ? "hidden" : string.Empty;
+    var disabled = Model?.Id != 0 ? "disabled" : "hidden";
+
+}
+
+<h2>Manage Local Government Unit</h2>
+
+<form method="post" action="@Url.Action("ManageLocalGov","LocalGov")">
+
+    <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+    <section>
+        <div class="form-group row">
+            <div class="col-sm-4 col-md-4 col-lg-4" @hidden>
+                <label>Region</label>
+                <select name="RegionId" id="Region" class="form-control form-control-user" required>
+                    <option value="" hidden>Please select a region</option>
+                    @{
+                        foreach (var region in regions)
+                        {
+                            <option value="@region.Id">@region.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-sm-4 col-md-4 col-lg-4" @hidden>
+                <label>Province</label>
+                <select class="form-control form-control-user" name="ProvinceId" id="provinces" required>
+                </select>
+            </div>
+            <div class="col-sm-4 col-md-4 col-lg-4">
+                <label>Local Government Unit</label>
+                <input type="text" class="form-control form-control-user"
+                       id="LguName" name="Name"
+                       placeholder="Enter Local Government Unit" required value="@Model.Name">
+            </div>
+        </div>
+    </section>
+
+    <div class="form-group row">
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <label>LGU Type</label>
+            <select class="form-control form-control-user" name="LguType" id="lgutype">
+                @{
+                    var citySelected = Model?.LguType == LguType.City ? "selected" : string.Empty;
+                    var municipalitySelected = Model?.LguType == LguType.Municipality ? "selected" : string.Empty;
+                }
+                <option value="" @disabled>Select LGU Type</option>
+                <option value="@LguType.City @citySelected">@LguType.City.GetDescription()</option>
+                <option value="@LguType.Municipality" @municipalitySelected>@LguType.Municipality.GetDescription()</option>
+            </select>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <label>Income Classification</label>
+            <select class="form-control form-control-user" name="IncomeClassification" id="incomeclass">
+                @{
+                    var firstSelected = Model?.IncomeClassification == IncomeClassification.First ? "selected" : string.Empty;
+                    var secondSelected = Model?.IncomeClassification == IncomeClassification.Second ? "selected" : string.Empty;
+                    var thirdSelected = Model?.IncomeClassification == IncomeClassification.Third ? "selected" : string.Empty;
+                    var fourthSelected = Model?.IncomeClassification == IncomeClassification.Fourth ? "selected" : string.Empty;
+                    var fifthSelected = Model?.IncomeClassification == IncomeClassification.Fifth ? "selected" : string.Empty;
+                }
+                <option @disabled value="">Select Income Classification</option>
+                <option value="@IncomeClassification.First @firstSelected">@IncomeClassification.First.GetDescription()</option>
+                <option value="@IncomeClassification.Second @secondSelected">@IncomeClassification.Second.GetDescription()</option>
+                <option value="@IncomeClassification.Third @thirdSelected">@IncomeClassification.Third.GetDescription()</option>
+                <option value="@IncomeClassification.Fourth @fourthSelected">@IncomeClassification.Fourth.GetDescription()</option>
+                <option value="@IncomeClassification.Fifth @fifthSelected">@IncomeClassification.Fifth.GetDescription()</option>
+
+            </select>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <label>City Classification</label>
+            <select class="form-control form-control-user" name="CityClassification" required id="cityclass">
+                @{
+                    var componetSelected = Model?.CityClassification == CityClassification.Component ? "selected" : string.Empty;
+                    var urbanSelected = Model?.CityClassification == CityClassification.HighlyUrbanized ? "selected" : string.Empty;
+                    var noneSelected = Model?.CityClassification == CityClassification.None ? "selected" : string.Empty;
+                }
+                <option @disabled value="">Select City Classification</option>
+                <option value="@CityClassification.Component @componetSelected">@CityClassification.Component.GetDescription()</option>
+                <option value="@CityClassification.HighlyUrbanized @urbanSelected">@CityClassification.HighlyUrbanized.GetDescription()</option>
+                <option value="@CityClassification.None @noneSelected">@CityClassification.None.GetDescription()</option>
+
+            </select>
+        </div>
+
+        <div class="col-sm-3 col-md-3 col-lg-3">
+            <label>Population</label>
+            <input type="text" class="form-control form-control-user"
+                   id="Population" name="Population" value="@Model.Population"
+                   placeholder="Enter Population Count" required>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>LGU Mayor</label>
+            <input type="text" class="form-control date-picker"
+                   id="LocalMayor" name="LocalMayor" value="@Model.LocalMayor"
+                   placeholder="Enter Mayor" required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Adress</label>
+            <input type="text" class="form-control form-control-user"
+                   id="CityHallAddress" name="CityHallAddress" value="@Model.CityHallAddress"
+                   placeholder="Enter Maunicipal Address" required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>LGU Email</label>
+            <input type="text" class="form-control form-control-user"
+                   id="Email" name="Email" value="@Model.Email"
+                   placeholder="Enter Email" required>
+        </div>
+    </div>
+    <div class="form-group row">
+
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Telephone Number</label>
+            <input type="text" class="form-control form-control-user"
+                   id="LocalPhoneNumber" name="LocalPhoneNumber" value="@Model.LocalPhoneNumber"
+                   placeholder="Enter Telephone No." required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Fax Number</label>
+            <input type="text" class="form-control form-control-user"
+                   id="LocalFaxNumber" name="LocalFaxNumber" value="@Model.LocalFaxNumber"
+                   placeholder="Enter Fax No." required>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4">
+            <label>Email</label>
+            <input type="email" class="form-control form-control-user"
+                   id="LocalWebsite" name="LocalWebsite" aria-describedby="emailHelp"
+                   placeholder="Enter Website" required value="@Model.LocalWebsite">
+        </div>
+    </div>
+    <div class="form-group row">
+
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <label>LGU Focal Person</label>
+            <input type="text" class="form-control form-control-user"
+                   id="LocalFocalPerson" name="LocalFocalPerson" value="@Model.LocalFocalPerson"
+                   placeholder="Enter Focal Person" required>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <label>Focal Person Department</label>
+            <input type="text" class="form-control form-control-user"
+                   id="FocalDepartment" name="FocalDepartment" value="@Model.FocalDepartment"
+                   placeholder="Enter Department." required>
+        </div>
+    </div>
+    <div class="form-group row">
+
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <label>Focal Person Telephone Number</label>
+            <input type="text" class="form-control form-control-user"
+                   id="FocalPhoneNumber" name="FocalPhoneNumber" value="@Model.FocalPhoneNumber"
+                   placeholder="Enter Focal Person" required>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6">
+            <label>Focal Person Email</label>
+            <input type="text" class="form-control form-control-user"
+                   id="FocalEmail" name="FocalEmail" value="@Model.FocalEmail"
+                   placeholder="Enter Focal Email." required>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-3 col-md-3 col-lg-3" style="margin-top: 1%">
+            <a class="btn btn-secondary bttn-width" href="@Url.Action("Index", "LocalGov")">Cancel</a>
+        </div>
+        <div class="col-sm-3 col-md-3 col-lg-3" style="margin-top: 1%">
+            <button type="button" class="btn btn-primary bttn-width manage-localgov">Save</button>
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6"></div>
+    </div>
+</form>
+
+@Html.Partial("Partials/_Loading")
+
+@section scripts{
+    @Scripts.Render("~/bundles/localgov")
+    @Scripts.Render("~/bundles/notify")
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            localgov.init();
+        });
+    </script>
+}

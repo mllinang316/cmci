@@ -1,0 +1,58 @@
+﻿@model IEnumerable<CMCI.Models.Province>
+@{
+    ViewBag.Title = "Provinces";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Provinces</h2>
+
+<div class="text-right">
+    <button class="btn btn-primary bttn-new-province"><span class="fa fa-plus"></span>&nbsp; New Province</button>
+</div>
+<br />
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm table-responsive-md compact table-province" id="dataTable" width="100%">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>Name</th>
+                    <th>Region</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count() > 0)
+                {
+                    foreach (var items in Model)
+                    {
+                        <tr>
+                            <td>@items.Name</td>
+                            <td>@items.RegionName</td>
+                            <td class="text-center">
+                                <a href="@Url.Action("ManageView", "Province", new { provinceId = items.Id})" class="btn btn-info edit-emp" style="display: inline-block"><span class="fa fa-edit"></span> Edit</a>
+
+                                <form method="post" action="@Url.Action("DeleteProvince","Province")" style="display:inline-block">
+                                    <input type="hidden" id="provinceId" name="provinceId" value="@items.Id" />
+                                    <button type="button" class="btn btn-danger delete-pro"><span class="fa fa-trash"></span> Delete</button>
+                                </form>
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@Html.Partial("Partials/_Loading")
+
+@section scripts{
+    @Scripts.Render("~/bundles/province")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            province.init();
+        });
+    </script>
+}

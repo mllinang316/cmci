@@ -1,0 +1,228 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html style="height:100% !important">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>@ViewBag.Title - Cities and Municipalities Competitiveness Index</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/fontawesome")
+    @Styles.Render("~/Content/jquery-ui")
+    @Styles.Render("~/Content/charts")
+</head>
+<body class="sb-nav-fixed">
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top" style="box-shadow: 0 2px 4px -1px rgba(0,0,0,0.25);">
+        <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+            CMCI
+        </a>
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav">
+                <a href="@Url.Action("DataPortal", "Home")" class="nav-item nav-link active">Data Portal</a>
+            </div>
+            <div class="navbar-nav ml-auto">
+                <a href="@Url.Action("Index", "Account")" class="nav-item nav-link">Login</a>
+            </div>
+        </div>
+    </nav>
+
+    @*<div id="layoutSidenav">
+
+
+    </div>*@
+
+    <div class="home-content">
+        <main>
+            <div class="container">
+                @RenderBody()
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; @DateTime.Now.Year</div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/charts")
+    @RenderSection("scripts", required: false)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        LoadIndicators();
+        LoadProvinces();
+        LoadChart();
+
+        function LoadIndicators() {
+            $('#pillars').on('change', function (e) {
+                e.preventDefault();
+
+                var pillarId = $(this).val();
+
+                $.ajax({
+                    url: "/Home/GetIndicators?pillarId=" + pillarId,
+                    method: 'GET',
+                    success: function (result) {
+                        console.log(result);
+                        IndicatorMapDom(result);
+                    }
+                });
+            });
+        };
+
+        function ChartMapDom(data) {
+            var chart = $('#barChart');
+            console.log(data);
+            var lgus = [];
+            var indicatorDatas = [];
+
+            $.each(data, function (key, value) {
+                if (typeof value === 'object') {
+                    lgus.push(value.lgu);
+                    indicatorDatas.push(value.indicatorData);
+                }
+            });
+
+            var maxData = Math.max.apply(Math, indicatorDatas);
+
+            window.myLineChart = new Chart(chart, {
+                type: 'horizontalBar',
+                data: {
+                    labels: lgus,
+                    datasets: [{
+                        label: "Data",
+                        backgroundColor: ["#c45850", "#8e5ea2", "#3cba9f", "#e8c3b9"],
+                        borderColor: "rgba(2,117,216,1)",
+                        data: indicatorDatas,
+                    }],
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                            gridLines: {
+                                display: false
+                            },
+                            ticks: {
+                                maxTicksLimit: 10,
+                                beginAtZero: true,
+                                userCallback: function (value, index, values) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: maxData,
+                                maxTicksLimit: 10,
+                            },
+                            gridLines: {
+                                display: true
+                            }
+                        }],
+                    },
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        mode: 'label',
+                        label: 'mylabel',
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                return tooltipItem.xLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            },
+                        },
+                    }, 
+                }
+            });
+
+        };
+
+        function IndicatorMapDom(data) {
+            $('#indicators').empty();
+            $('#indicators').append('<option hidden>Select Indicator</option>');
+            $.each(data, function (key, value) {
+                if (typeof value === 'object') {
+
+                    var options = `<option value="${value.indicatorName}">${value.indicatorDesc}</option>`
+                    $('#indicators').append(options);
+                }
+            });
+        };
+
+        function LoadChart() {
+            $('#btnChart').on('click', function (e) {
+                e.preventDefault();
+
+                var $form = $(this).closest('form');
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    method: 'GET',
+                    data: $form.serializeArray(),
+                    beforeSend: function () {
+                    },
+                    success: function (result) {
+                        if (window.myLineChart instanceof Chart) {
+                            window.myLineChart.destroy();
+                        }
+                        ChartMapDom(result);
+                    },
+                    error: function (result) {
+                        console.log(result);
+                    },
+                    complete: function () {
+                    }
+                });
+            });
+        };
+
+        function LoadProvinces() {
+            $('#region').on('change', function (e) {
+                e.preventDefault();
+
+                var regionId = $(this).val();
+
+                $.ajax({
+                    url: "/Home/GetProvincesByRegion?regionId=" + regionId,
+                    method: 'GET',
+                    success: function (result) {
+                        $('#province').empty();
+                        $('#province').append('<option hidden>Select Province</option>');
+                        ProvinceMapDom(result);
+                    }
+                });
+            });
+        };
+
+        function ProvinceMapDom(data) {
+
+            $.each(data, function (key, value) {
+                if (typeof value === 'object') {
+                    var options = `<option value="${value.provinceId}">${value.provinceName}</option>`
+                    $('#province').append(options);
+                }
+            });
+        };
+    });
+
+</script>
+</body>
+</html>

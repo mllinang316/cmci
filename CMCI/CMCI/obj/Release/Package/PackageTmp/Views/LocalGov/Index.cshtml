@@ -1,0 +1,63 @@
+﻿@model IEnumerable<CMCI.Models.LocalGovernment>
+@using CMCI.Extensions
+@{
+    ViewBag.Title = "Local Government";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Local Government</h2>
+
+<div class="text-right">
+    <button class="btn btn-primary bttn-new-local"><span class="fa fa-plus"></span>&nbsp; New LGU</button>
+</div>
+<br />
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm table-responsive-md compact table-localgov" id="dataTable" width="100%">
+            <thead class="bg-dark text-white">
+                <tr>
+                    <th>LGU</th>
+                    <th>Province</th>
+                    <th>Type</th>
+                    <th>Income Classification</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count() > 0)
+                {
+                    foreach (var items in Model)
+                    {
+                        <tr>
+                            <td>@items.Name</td>
+                            <td>@items.ProvinceName</td>
+                            <td>@items.LguType.GetDescription()</td>
+                            <td>@items.IncomeClassification.GetDescription()</td>
+                            <td class="text-center">
+                                <a href="@Url.Action("ManageView", "LocalGov", new { localGovId = items.Id})" class="btn btn-info edit-emp" style="display: inline-block"><span class="fa fa-edit"></span> Edit</a>
+
+                                <form method="post" action="@Url.Action("DeleteLocalGov","LocalGov")" style="display:inline-block">
+                                    <input type="hidden" id="localGovId" name="localGovId" value="@items.Id" />
+                                    <button type="button" class="btn btn-danger delete-lgu"><span class="fa fa-trash"></span> Delete</button>
+                                </form>
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@Html.Partial("Partials/_Loading")
+
+@section scripts{
+    @Scripts.Render("~/bundles/localgov")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            localgov.init();
+        });
+    </script>
+}

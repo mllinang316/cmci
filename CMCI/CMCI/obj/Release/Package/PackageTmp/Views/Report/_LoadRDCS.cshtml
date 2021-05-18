@@ -1,0 +1,30 @@
+﻿
+@model IList<CMCI.Models.ViewModel.RDCSViewModel>
+
+@{
+    Layout = null;
+}
+<div class="table-responsive">
+    <table class="table table-striped" id="tableDataItems">
+        <thead>
+            <tr>
+                <th>Indicator</th>
+                <th>Period Covered</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                foreach (var items in Model)
+                {
+                    <tr>
+                        <td>@items.Indicator</td>
+                        <td>@items.PeriodCovered</td>
+                        <td>@items.Data</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
